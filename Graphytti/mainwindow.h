@@ -13,7 +13,9 @@ class MainWindow : public QMainWindow
 
 public:
     explicit MainWindow(QWidget *parent = 0);
-    void FileParser(QString filepath);
+    void file_parser(QString filepath);
+    void plot_fluor_graph();
+    void plot_res_graph();
     ~MainWindow();
 
 private slots:

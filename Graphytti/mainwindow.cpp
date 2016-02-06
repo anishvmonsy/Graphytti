@@ -29,10 +29,16 @@ void MainWindow::on_file_button_clicked()
     }
     else{
         QMessageBox::information(this,tr("File Path"),file_path);
+        file_parser(file_path);
+        plot_fluor_graph();
+        plot_res_graph();
+
+
+
     }
 
 }
-void MainWindow::FileParser(QString file_path){
+void MainWindow::file_parser(QString file_path){
     QFile inputFile(file_path);
     int counter=0;  // to make sure that parsing gets over after reading the cycle_text
     int star_counter=0;//to make sure the graph_title is taken care of
@@ -145,7 +151,103 @@ void MainWindow::FileParser(QString file_path){
           current_cycle.enter_res(res);
           current_cycle.enter_acorr(acorr);
           inputFile.close();
-      }
+    }
+
+
 
 
 }
+
+void MainWindow::plot_fluor_graph(){
+    double max_point=0;
+    QVector<double> ex=current_cycle.ex;
+    QVector<double> chan=current_cycle.chan;
+    QVector<double> em=current_cycle.em;
+    QVector<double> cal_em=current_cycle.cal_em;
+    int point_count=current_cycle.point_count;
+    for(int i=0;i<point_count;i++){
+          if(max_point<ex[i]){
+              max_point=ex[i];
+          }
+          if(max_point<em[i]){
+              max_point=em[i];
+          }
+          if(max_point<cal_em[i]){
+              max_point=cal_em[i];
+          }
+
+
+
+      }
+
+
+    ui->fluor_graph->xAxis->setLabel("ChannelNo.");
+    ui->fluor_graph->yAxis->setLabel("Intensity");
+    ui->fluor_graph->xAxis->setRange(0,150);
+    ui->fluor_graph->yAxis->setRange(0,ceil(max_point));
+
+    ui->fluor_graph->addGraph();
+    ui->fluor_graph->graph(0)->setData(chan,ex);
+    ui->fluor_graph->graph(0)->setPen(QPen(Qt::red));
+
+
+
+    ui->fluor_graph->addGraph();
+    ui->fluor_graph->graph(1)->setData(chan,em);
+    ui->fluor_graph->graph(1)->setPen(QPen(Qt::green));
+
+
+    ui->fluor_graph->addGraph();
+    ui->fluor_graph->graph(2)->setData(chan,cal_em);
+
+    ui->fluor_graph->replot();
+}
+
+void MainWindow::plot_res_graph(){
+
+    QVector<double> res=current_cycle.res;
+    QVector<double> chan=current_cycle.chan;
+    QVector<double> acorr=current_cycle.acorr;
+    int point_count=current_cycle.point_count;
+
+    double max_point=0;
+    double min_point=0;
+    for(int i=0;i<point_count;i++){
+        if(max_point<res[i]){
+            max_point=res[i];
+        }
+        if(min_point>res[i])
+            min_point=res[i];
+      //  QTextStream(stdout) << ex[i]<< endl;
+
+        if(max_point<acorr[i]){
+            max_point=acorr[i];
+        }
+        if(min_point>acorr[i])
+            min_point=acorr[i];
+
+    }
+
+
+    ui->res_graph->setInteraction(QCP::iRangeDrag, true);
+    ui->res_graph->xAxis->setLabel("ChannelNo.");
+    ui->res_graph->yAxis->setLabel("Residuals");
+    ui->res_graph->xAxis->setRange(0,150);
+    ui->res_graph->yAxis->setRange(floor(min_point),ceil(max_point));
+
+    ui->res_graph->addGraph();
+    ui->res_graph->graph(0)->addData(chan,res);
+    ui->res_graph->graph(0)->setPen(QPen(Qt::red));
+
+
+
+
+    ui->res_graph->addGraph();
+    ui->res_graph->graph(1)->addData(chan,acorr);
+
+
+    ui->res_graph->replot();
+
+    ;
+}
+

@@ -14,7 +14,7 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="QCustomPlot" name="widget" native="true">
+   <widget class="QCustomPlot" name="fluor_graph" native="true">
     <property name="geometry">
      <rect>
       <x>89</x>
@@ -24,7 +24,7 @@
      </rect>
     </property>
    </widget>
-   <widget class="QCustomPlot" name="widget_2" native="true">
+   <widget class="QCustomPlot" name="res_graph" native="true">
     <property name="geometry">
      <rect>
       <x>89</x>
