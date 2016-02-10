@@ -16,6 +16,7 @@ public:
     void file_parser(QString filepath);
     void plot_fluor_graph();
     void plot_res_graph();
+    void plot_acorr_graph();
     ~MainWindow();
 
 private slots:

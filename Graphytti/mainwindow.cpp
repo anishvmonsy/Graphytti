@@ -32,6 +32,7 @@ void MainWindow::on_file_button_clicked()
         file_parser(file_path);
         plot_fluor_graph();
         plot_res_graph();
+        plot_acorr_graph();
 
 
 
@@ -45,6 +46,8 @@ void MainWindow::file_parser(QString file_path){
     if (inputFile.open(QIODevice::ReadOnly))
        {
           QTextStream in(&inputFile);
+
+          //expt_title.append("<b>");
           while (!in.atEnd()&&!counter)
           {
              QString file_line = in.readLine();            //read every line
@@ -55,6 +58,7 @@ void MainWindow::file_parser(QString file_path){
              }
              else if(star_counter==1){
                  expt_title.append(simplified_line);
+                 //expt_title.append("</b>");
                  star_counter=0;                                      //set up the title of the experiment
                  ui->expt_label->setText(expt_title);
              }
@@ -159,12 +163,19 @@ void MainWindow::file_parser(QString file_path){
 }
 
 void MainWindow::plot_fluor_graph(){
-    double max_point=0;
+
     QVector<double> ex=current_cycle.ex;
     QVector<double> chan=current_cycle.chan;
     QVector<double> em=current_cycle.em;
     QVector<double> cal_em=current_cycle.cal_em;
     int point_count=current_cycle.point_count;
+    for(int i=0;i<point_count;i++){
+        ex[i]=log10(ex[i]);
+        em[i]=log10(em[i]);
+        cal_em[i]=log10(cal_em[i]);
+    }
+    double max_point=0;
+    double min_point=0;
     for(int i=0;i<point_count;i++){
           if(max_point<ex[i]){
               max_point=ex[i];
@@ -175,16 +186,22 @@ void MainWindow::plot_fluor_graph(){
           if(max_point<cal_em[i]){
               max_point=cal_em[i];
           }
-
-
-
+          if(min_point>ex[i]){
+              min_point=ex[i];
+          }
+          if(min_point>em[i]){
+              min_point=em[i];
+          }
+          if(min_point>cal_em[i]){
+              min_point=cal_em[i];
+          }
       }
 
-
+    ui->fluor_graph->setInteraction(QCP::iRangeDrag, true);
     ui->fluor_graph->xAxis->setLabel("ChannelNo.");
-    ui->fluor_graph->yAxis->setLabel("Intensity");
+    ui->fluor_graph->yAxis->setLabel("Intensity(log10 scale)");
     ui->fluor_graph->xAxis->setRange(0,150);
-    ui->fluor_graph->yAxis->setRange(0,ceil(max_point));
+    ui->fluor_graph->yAxis->setRange(min_point,max_point);
 
     ui->fluor_graph->addGraph();
     ui->fluor_graph->graph(0)->setData(chan,ex);
@@ -207,7 +224,7 @@ void MainWindow::plot_res_graph(){
 
     QVector<double> res=current_cycle.res;
     QVector<double> chan=current_cycle.chan;
-    QVector<double> acorr=current_cycle.acorr;
+
     int point_count=current_cycle.point_count;
 
     double max_point=0;
@@ -220,11 +237,7 @@ void MainWindow::plot_res_graph(){
             min_point=res[i];
       //  QTextStream(stdout) << ex[i]<< endl;
 
-        if(max_point<acorr[i]){
-            max_point=acorr[i];
-        }
-        if(min_point>acorr[i])
-            min_point=acorr[i];
+
 
     }
 
@@ -236,18 +249,47 @@ void MainWindow::plot_res_graph(){
     ui->res_graph->yAxis->setRange(floor(min_point),ceil(max_point));
 
     ui->res_graph->addGraph();
-    ui->res_graph->graph(0)->addData(chan,res);
+    ui->res_graph->graph(0)->setData(chan,res);
     ui->res_graph->graph(0)->setPen(QPen(Qt::red));
-
-
-
-
-    ui->res_graph->addGraph();
-    ui->res_graph->graph(1)->addData(chan,acorr);
 
 
     ui->res_graph->replot();
 
     ;
+}
+void MainWindow::plot_acorr_graph(){
+    QVector<double> acorr=current_cycle.acorr;
+    QVector<double> chan=current_cycle.chan;
+
+    int point_count=current_cycle.point_count;
+
+    double max_point=0;
+    double min_point=0;
+    for(int i=0;i<point_count;i++){
+
+
+        if(max_point<acorr[i]){
+            max_point=acorr[i];
+        }
+        if(min_point>acorr[i])
+            min_point=acorr[i];
+
+    }
+    ui->acorr_graph->setInteraction(QCP::iRangeDrag, true);
+    ui->acorr_graph->xAxis->setLabel("ChannelNo.");
+    ui->acorr_graph->yAxis->setLabel("Auto-corr");
+    ui->acorr_graph->xAxis->setRange(0,150);
+    ui->acorr_graph->yAxis->setRange(floor(min_point),ceil(max_point));
+
+
+
+
+
+    ui->acorr_graph->addGraph();
+    ui->acorr_graph->graph(0)->setData(chan,acorr);
+
+
+    ui->acorr_graph->replot();
+
 }
 
