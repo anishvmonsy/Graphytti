@@ -93,6 +93,32 @@
      </rect>
     </property>
    </widget>
+   <widget class="QPushButton" name="prev_cycle_button">
+    <property name="geometry">
+     <rect>
+      <x>850</x>
+      <y>440</y>
+      <width>99</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Previous cycle</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="next_cycle_button">
+    <property name="geometry">
+     <rect>
+      <x>1010</x>
+      <y>440</y>
+      <width>99</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Next Cycle</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
