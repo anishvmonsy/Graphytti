@@ -15,3 +15,6 @@ quality graph plots with the QCustomPlot library under the GPL.
 
 After meeting the above requirements quickly, we aim to go into the analysis aspect and eliminate his ordeal of going 
 to the command line there as well.
+
+Following is the link to license file of the project:
+https://gitlab.com/anishvmonsy/team17cs243/blob/master/license.txt
