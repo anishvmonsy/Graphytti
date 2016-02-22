@@ -1,0 +1,8 @@
+The software uses community edition of Qt which is partially distributed over LGPLv2 and LGPLv3.
+This work is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or any later version.
+This work is distributed in the hope that it will be useful, but without any warranty. See version 2 and version 3 of the GNU General Public License for more details. 
+Following is the link to  GPLv2 license :
+http://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html
+Following is a link to GPLv3 license :
+http://www.gnu.org/licenses/gpl-3.0.en.html
+ 
