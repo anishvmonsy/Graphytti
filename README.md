@@ -2,7 +2,7 @@
 This project is aimed at implementing an GUI interface for easily visualising
 the results of analysis after the fluorescence intensity decay experiment.
 
-# # # Supported Platforms
+### Supported Platforms
 
 The source code can be compiled appropriately to support the following platforms
 
@@ -12,10 +12,10 @@ The source code can be compiled appropriately to support the following platforms
 
 Building the sources requires Qt 5.4.0 or later.
 
-# # # Learn More
+### Learn More
 * [Dependencies](https://gitlab.com/anishvmonsy/team17cs243/blob/master/DEPENDENCIES.md)
 * [SRS](https://gitlab.com/anishvmonsy/team17cs243/blob/master/srs.pdf)
 
 
-# # # License
+### License
 [GNU General Public License version 3](https://gitlab.com/anishvmonsy/team17cs243/blob/master/license.txt) 
