@@ -13,9 +13,9 @@ The source code can be compiled appropriately to support the following platforms
 Building the sources requires Qt 5.4.0 or later.
 
 ###Learn More
-* [Dependencies](./DEPENDENCIES.md)
-* [SRS](./SRS.pdf)
+* [Dependencies](https://gitlab.com/anishvmonsy/team17cs243/blob/master/DEPENDENCIES.md)
+* [SRS](https://gitlab.com/anishvmonsy/team17cs243/blob/master/srs.pdf)
 
 
 ###License
-[GNU General Public License version 3](./license.txt) 
+[GNU General Public License version 3](https://gitlab.com/anishvmonsy/team17cs243/blob/master/license.txt) 
