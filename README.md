@@ -1,20 +1,21 @@
 # GRAPHYTTI
 This project is aimed at implementing an GUI interface for easily visualising
-the results of the fluorescence intensity decay experiment.
-Our client is Prof. Swaminathan of the Biosciences and Bioengineering department
-in IIT Guwahati.
+the results of analysis after the fluorescence intensity decay experiment.
 
-Our client's requirements are
+###Supported Platforms
 
-* A quick way to observe graphs from the result data
+The source code can be compiled appropriately to support the following platforms
 
-* Avoid the need of printing the graph if unsuccessful
+* Windows 7 or later 
+* Ubuntu Linux 14.04 (32-bit and 64-bit) or later 
+* Mac OS X 10.7 or later
 
-We aim to achieve this with an application built with the Qt framework licensed under the LGPL and also publication
-quality graph plots with the QCustomPlot library under the GPL.
+Building the sources requires Qt 5.4.0 or later.
 
-After meeting the above requirements quickly, we aim to go into the analysis aspect and eliminate his ordeal of going 
-to the command line there as well.
+###Learn More
+* [Dependencies](./DEPENDENCIES.md)
+* [SRS](./SRS.pdf)
 
-Following is the link to license file of the project:
-https://gitlab.com/anishvmonsy/team17cs243/blob/master/license.txt
+
+###License
+[GNU General Public License version 3](./license.txt) 
