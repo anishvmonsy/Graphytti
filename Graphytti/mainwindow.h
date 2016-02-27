@@ -7,17 +7,25 @@ namespace Ui {
 class MainWindow;
 }
 
+
+/*
+ * MainWindow class is responsible for handling user interactions,
+ * getting data from files and plotting the data on the screen.
+ *
+ */
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
 public:
     explicit MainWindow(QWidget *parent = 0);
-    void file_parser(QString filepath);
+    int file_parser(QString filepath);
+
 
     void plot_fluor_graph();
     void plot_res_graph();
     void plot_acorr_graph();
+    void display_cycle_text();
     ~MainWindow();
 
 private slots:

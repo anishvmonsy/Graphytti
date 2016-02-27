@@ -6,6 +6,12 @@
 #define ACORR_TICK_STEP 0.6
 #define CHANNELS_VIEWED 150
 
+
+/*
+ * Sets up basic properties of the user interface in the application,
+ * also initialises some variables to states that are appropriate at the beginning of
+ * the application
+ */
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -16,13 +22,21 @@ MainWindow::MainWindow(QWidget *parent) :
     file_already_open=false;
 }
 
+
+
+/*
+ * Clears up data that was dynamically allocated along with other UI data
+ */
 MainWindow::~MainWindow()
 {
     all_cycles.clear();
     delete ui;
 }
 
-
+/*
+ * Opens file dialog for selection of file. When file is selected, gets data from file and plots graphs.
+ * If inappropriate file chosen, then shows dialog box
+ */
 void MainWindow::on_file_button_clicked()
 {
 
@@ -44,17 +58,34 @@ void MainWindow::on_file_button_clicked()
             file_already_open=true;
 
         }
-        file_parser(file_path);
-        plot_fluor_graph();
-        plot_res_graph();
-        plot_acorr_graph();
+
+
+        int file_hand_error_code=file_parser(file_path);
+        if(file_hand_error_code==QFile::NoError){
+
+            display_cycle_text();
+            plot_fluor_graph();
+            plot_res_graph();
+            plot_acorr_graph();
+        }
+        else{
+            QMessageBox::warning(this,tr("Improper file"),"Please ensure that the file chosen is of appropriate file format");
+        }
 
 
 
     }
 
 }
-void MainWindow::file_parser(QString file_path){
+
+
+/*
+ * Extracts data from file specified by argument file_path and loads data into all_cycles
+ * Returns a file handling error code corresponding to  QFile::error()
+ */
+
+
+int MainWindow::file_parser(QString file_path){
     QFile inputFile(file_path);
     bool counter=false;  // to make sure that parsing gets over after reading the cycle_text
     bool star_counter=false;//to make sure the graph_title is taken care of(graph_title occurs one line after )
@@ -101,7 +132,7 @@ void MainWindow::file_parser(QString file_path){
 
           }
 
-          ui->cycle_label->setText(all_cycles[current_cycle_index].cycle_text);
+
 
           QString cycle_first_line;//used for  storing the first line of the next cycle
 
@@ -171,15 +202,7 @@ void MainWindow::file_parser(QString file_path){
           }
 
           //Loading the parsed data into the current_cycle
-          all_cycles[current_cycle_index].enter_point_count(point_index);
-          all_cycles[current_cycle_index].enter_ex(ex);
-          all_cycles[current_cycle_index].enter_chan(chan);
-          all_cycles[current_cycle_index].enter_em(em);
-          all_cycles[current_cycle_index].enter_cal_em(cal_em);
-          all_cycles[current_cycle_index].enter_res(res);
-          all_cycles[current_cycle_index].enter_acorr(acorr);
-
-
+          all_cycles[current_cycle_index].load_cycle_data(point_index,chan,ex,em,cal_em,res,acorr);
 
           //loading cycles after first one
 
@@ -280,13 +303,8 @@ void MainWindow::file_parser(QString file_path){
                 }
             }
             //Loading the parsed data into the current_cycle
-            all_cycles[current_cycle_index].enter_point_count(point_index);
-            all_cycles[current_cycle_index].enter_ex(ex);
-            all_cycles[current_cycle_index].enter_chan(chan);
-            all_cycles[current_cycle_index].enter_em(em);
-            all_cycles[current_cycle_index].enter_cal_em(cal_em);
-            all_cycles[current_cycle_index].enter_res(res);
-            all_cycles[current_cycle_index].enter_acorr(acorr);
+            all_cycles[current_cycle_index].load_cycle_data(point_index,chan,ex,em,cal_em,res,acorr);
+
 
 
 
@@ -298,19 +316,21 @@ void MainWindow::file_parser(QString file_path){
           inputFile.close();
     }
 
-
+    return inputFile.error();
 
 
 }
 
-
+/*
+ * Plots the fluorescence intensity vs time graph(topmost graph in the window)
+ */
 void MainWindow::plot_fluor_graph(){
 
-    QVector<double> ex=all_cycles[current_cycle_index].ex;
-    QVector<double> chan=all_cycles[current_cycle_index].chan;
-    QVector<double> em=all_cycles[current_cycle_index].em;
-    QVector<double> cal_em=all_cycles[current_cycle_index].cal_em;
-    int point_count=all_cycles[current_cycle_index].point_count;
+    QVector<double> ex=all_cycles[current_cycle_index].get_ex();
+    QVector<double> chan=all_cycles[current_cycle_index].get_chan();
+    QVector<double> em=all_cycles[current_cycle_index].get_em();
+    QVector<double> cal_em=all_cycles[current_cycle_index].get_cal_em();
+    long point_count=all_cycles[current_cycle_index].get_point_count();
     for(int i=0;i<point_count;i++){
         ex[i]=log10(ex[i]);
         em[i]=log10(em[i]);
@@ -363,12 +383,16 @@ void MainWindow::plot_fluor_graph(){
     ui->fluor_graph->replot();
 }
 
+
+/*
+ * Plots the residuals vs time graph(middle graph in the window)
+ */
 void MainWindow::plot_res_graph(){
 
-    QVector<double> res=all_cycles[current_cycle_index].res;
-    QVector<double> chan=all_cycles[current_cycle_index].chan;
+    QVector<double> res=all_cycles[current_cycle_index].get_res();
+    QVector<double> chan=all_cycles[current_cycle_index].get_chan();
 
-    int point_count=all_cycles[current_cycle_index].point_count;
+    long point_count=all_cycles[current_cycle_index].get_point_count();
 
     double max_point=0;
     double min_point=0;
@@ -401,11 +425,16 @@ void MainWindow::plot_res_graph(){
 
     ;
 }
-void MainWindow::plot_acorr_graph(){
-    QVector<double> acorr=all_cycles[current_cycle_index].acorr;
-    QVector<double> chan=all_cycles[current_cycle_index].chan;
 
-    int point_count=all_cycles[current_cycle_index].point_count;
+
+/*
+ *  Plots the autocorelation vs time graph(lowest one in the window)
+ */
+void MainWindow::plot_acorr_graph(){
+    QVector<double> acorr=all_cycles[current_cycle_index].get_acorr();
+    QVector<double> chan=all_cycles[current_cycle_index].get_chan();
+
+    long point_count=all_cycles[current_cycle_index].get_point_count();
 
     double max_point=0;
     double min_point=0;
@@ -439,21 +468,39 @@ void MainWindow::plot_acorr_graph(){
 
 }
 
-
+/*
+ * Decrements current_cycle_index to display appropriate cycle in the window on the user's click
+ */
 void MainWindow::on_prev_cycle_button_clicked()
 {
-    current_cycle_index=(current_cycle_index-1)%all_cycles.size();
-    ui->cycle_label->setText(all_cycles[current_cycle_index].cycle_text);
-    plot_acorr_graph();
-    plot_fluor_graph();
-    plot_res_graph();
+    if(file_already_open){
+        current_cycle_index=(current_cycle_index-1)%all_cycles.size();
+        display_cycle_text();
+        plot_acorr_graph();
+        plot_fluor_graph();
+        plot_res_graph();
+    }
 }
 
+
+/*
+ * Increments current_cycle_index to display appropriate cycle in the window on the user's click
+ */
 void MainWindow::on_next_cycle_button_clicked()
 {
-    current_cycle_index=(current_cycle_index+1)%all_cycles.size();
-    ui->cycle_label->setText(all_cycles[current_cycle_index].cycle_text);
-    plot_acorr_graph();
-    plot_fluor_graph();
-    plot_res_graph();
+    if(file_already_open){
+        current_cycle_index=(current_cycle_index+1)%all_cycles.size();
+        display_cycle_text();
+        plot_acorr_graph();
+        plot_fluor_graph();
+        plot_res_graph();
+     }
+}
+
+
+/*
+ * Changes the text dispalyed in text-label cycle_label
+ */
+void MainWindow::display_cycle_text(){
+     ui->cycle_label->setText(all_cycles[current_cycle_index].get_cycle_text());
 }
