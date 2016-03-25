@@ -332,9 +332,15 @@ void MainWindow::plot_fluor_graph(){
     QVector<double> cal_em=all_cycles[current_cycle_index].get_cal_em();
     long point_count=all_cycles[current_cycle_index].get_point_count();
     for(int i=0;i<point_count;i++){
-        ex[i]=log10(ex[i]);
-        em[i]=log10(em[i]);
-        cal_em[i]=log10(cal_em[i]);
+        if(ex[i]!=0){
+            ex[i]=log10(ex[i]);
+        }
+        if(em[i]!=0){
+            em[i]=log10(em[i]);
+        }
+        if(cal_em[i]!=0){
+            cal_em[i]=log10(cal_em[i]);
+        }
     }
     double max_point=0;
     double min_point=0;
@@ -359,7 +365,9 @@ void MainWindow::plot_fluor_graph(){
           }
       }
 
+    ui->fluor_graph->setInteraction(QCP::iRangeZoom,true);
     ui->fluor_graph->setInteraction(QCP::iRangeDrag, true);
+    ui->fluor_graph->setInteraction(QCP::iSelectPlottables,true);
     ui->fluor_graph->xAxis->setLabel("ChannelNo.");
     ui->fluor_graph->yAxis->setLabel("Intensity(log10 scale)");
     ui->fluor_graph->xAxis->setRange(0,CHANNELS_VIEWED);
@@ -379,6 +387,7 @@ void MainWindow::plot_fluor_graph(){
     ui->fluor_graph->addGraph();
     ui->fluor_graph->graph(2)->setData(chan,cal_em);
     ui->fluor_graph->graph(2)->setPen(QPen(Qt::yellow));
+
 
     ui->fluor_graph->replot();
 }
@@ -408,7 +417,8 @@ void MainWindow::plot_res_graph(){
 
     }
 
-
+    ui->res_graph->setInteraction(QCP::iRangeZoom,true);
+    ui->res_graph->setInteraction(QCP::iSelectPlottables,true);
     ui->res_graph->setInteraction(QCP::iRangeDrag, true);
     ui->res_graph->xAxis->setLabel("ChannelNo.");
     ui->res_graph->yAxis->setLabel("Residuals");
@@ -448,6 +458,8 @@ void MainWindow::plot_acorr_graph(){
             min_point=acorr[i];
 
     }
+    ui->acorr_graph->setInteraction(QCP::iRangeZoom,true);
+    ui->acorr_graph->setInteraction(QCP::iSelectPlottables,true);
     ui->acorr_graph->setInteraction(QCP::iRangeDrag, true);
     ui->acorr_graph->xAxis->setLabel("ChannelNo.");
     ui->acorr_graph->yAxis->setLabel("Auto-corr");

@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 #include<vector>
 #include <QMainWindow>
+#include "qcustomplot.h"
 #include "exptcycle.h"
 namespace Ui {
 class MainWindow;
@@ -29,11 +30,15 @@ public:
     ~MainWindow();
 
 private slots:
+
     void on_file_button_clicked();
 
     void on_prev_cycle_button_clicked();
 
     void on_next_cycle_button_clicked();
+
+
+
 
 private:
     bool file_already_open;

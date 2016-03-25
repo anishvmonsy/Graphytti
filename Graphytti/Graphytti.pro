@@ -15,10 +15,12 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     qcustomplot.cpp \
-    exptcycle.cpp
+    exptcycle.cpp \
+    interactiveplot.cpp
 
 HEADERS  += mainwindow.h \
     qcustomplot.h \
-    exptcycle.h
+    exptcycle.h \
+    interactiveplot.h
 
 FORMS    += mainwindow.ui
