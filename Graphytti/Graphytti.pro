@@ -23,4 +23,4 @@ HEADERS  += mainwindow.h \
     exptcycle.h \
     interactiveplot.h
 
-FORMS    += mainwindow.ui
+
