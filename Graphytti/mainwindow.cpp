@@ -1,5 +1,6 @@
-#include "interactiveplot.h"
 #include "mainwindow.h"
+#include "interactiveplot.h"
+#include "exponeplotter.h"
 #include<QPushButton>
 #include <QVBoxLayout>
 
@@ -34,17 +35,32 @@ MainWindow::~MainWindow()
 }
 void MainWindow::graphChoice(){
 
-    QWidget *dummynew=new QWidget;
-    QVBoxLayout *vbox = new QVBoxLayout(this);
-    QPushButton *goBack=new QPushButton("go Back",this);
-    vbox->addWidget(goBack);
-    dummynew->setLayout(vbox);
-    stackedWidget->addWidget(dummynew);
-    stackedWidget->setCurrentIndex(1);
+    myGraphPlotter= new ExpOnePlotter(stackedWidget);
+    QString file_path= QFileDialog::getOpenFileName(this,
+                                                       tr("Open a file"),
+                                                       QDir().rootPath(),
+                                                       "All files (*)");
+    if(file_path.isEmpty()){
+        QMessageBox::information(this,tr("No file selected"),"Please choose a file to continue");
+        mainScreen();
+    }
+    else{
 
 
-    connect(goBack,&QPushButton::clicked,this, &MainWindow::mainScreen);
 
+
+    int fileCheckingCode= myGraphPlotter->checkFile(file_path);
+    if(fileCheckingCode){
+        myGraphPlotter->parseFile(file_path);
+    }
+
+
+    myGraphPlotter->plotGraph();
+    connect(myGraphPlotter->getNextButton(),&QPushButton::clicked,this, &MainWindow::nextCycle);
+    connect(myGraphPlotter->getPrevButton(),&QPushButton::clicked,this, &MainWindow::prevCycle);
+
+    connect(myGraphPlotter->getGoBackButton(),&QPushButton::clicked,this, &MainWindow::mainScreen);
+  }
 
 }
 void MainWindow::mainScreen(){
@@ -53,4 +69,12 @@ void MainWindow::mainScreen(){
     stackedWidget->removeWidget(topWidget);
     delete topWidget;
 }
+void MainWindow::nextCycle(){
 
+        myGraphPlotter->nextCycle();
+
+
+}
+void MainWindow::prevCycle(){
+    myGraphPlotter->prevCycle();
+}
