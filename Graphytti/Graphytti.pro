@@ -17,13 +17,17 @@ SOURCES += main.cpp\
     qcustomplot.cpp \
     exptcycle.cpp \
     interactiveplot.cpp \
-    exponeplotter.cpp
+    exponeplotter.cpp \
+    anisoplotter.cpp \
+    exptcycle2.cpp
 
 HEADERS  += mainwindow.h \
     qcustomplot.h \
     exptcycle.h \
     interactiveplot.h \
     graphplotter.h \
-    exponeplotter.h
+    exponeplotter.h \
+    anisoplotter.h \
+    exptcycle2.h
 
 
