@@ -100,18 +100,21 @@ void MainWindow::excitationIntensityChoice(){
 
 
 
-    int fileCheckingCode= myGraphPlotter->checkFile(file_path);
-    if(fileCheckingCode){
-        myGraphPlotter->parseFile(file_path);
-    }
+        int fileCheckingCode= myGraphPlotter->checkFile(file_path);
+           if(fileCheckingCode){
+               QMessageBox::information(this,tr("Wrong file selected"),"Please choose a correct file to continue");
+               mainScreen();
+           }
+           else{
 
+           myGraphPlotter->parseFile(file_path);
+           myGraphPlotter->plotGraph();
+           connect(myGraphPlotter->getNextButton(),&QPushButton::clicked,this, &MainWindow::nextCycle);
+           connect(myGraphPlotter->getPrevButton(),&QPushButton::clicked,this, &MainWindow::prevCycle);
 
-    myGraphPlotter->plotGraph();
-    connect(myGraphPlotter->getNextButton(),&QPushButton::clicked,this, &MainWindow::nextCycle);
-    connect(myGraphPlotter->getPrevButton(),&QPushButton::clicked,this, &MainWindow::prevCycle);
-
-    connect(myGraphPlotter->getGoBackButton(),&QPushButton::clicked,this, &MainWindow::mainScreen);
-  }
+           connect(myGraphPlotter->getGoBackButton(),&QPushButton::clicked,this, &MainWindow::mainScreen);
+         }
+       }
 
 }
 void MainWindow::mainScreen(){
