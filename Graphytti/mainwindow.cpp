@@ -7,18 +7,25 @@
 
 
 
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
 
     stackedWidget = new QStackedWidget;
     QWidget *widget1=new QWidget;
+    QHBoxLayout *hbox = new QHBoxLayout(this);
+    QLabel *label  = new QLabel(this);
+    QPixmap p(":/icons/lolpid.PNG");
+    label->setPixmap(p);
+    hbox->addWidget(label);
     QVBoxLayout *vbox = new QVBoxLayout(this);
     QPushButton *anisotropy=new QPushButton("Anisotropy",this);
     QPushButton *excitationAnalysis=new QPushButton("Excitation Analysis",this);
     vbox->addWidget(anisotropy);
     vbox->addWidget(excitationAnalysis);
-    widget1->setLayout(vbox);
+    hbox->addLayout(vbox);
+    widget1->setLayout(hbox);
     stackedWidget->addWidget(widget1);
     stackedWidget->setCurrentIndex(0);
     //stackedWidget->widget(0)->show();
@@ -26,8 +33,10 @@ MainWindow::MainWindow(QWidget *parent)
 
     //signals and slots connection
     connect(excitationAnalysis, &QPushButton::clicked, this, &MainWindow::excitationIntensityChoice);
+
     createAction();
     createMenu();
+
 }
 void MainWindow::about()
 {
@@ -80,6 +89,7 @@ void MainWindow::createMenu(){
     helpMenu->addAction(aboutAct);
     helpMenu->addAction(aboutQtAct);
 }
+
 MainWindow::~MainWindow()
 {
 
