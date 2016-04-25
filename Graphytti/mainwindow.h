@@ -5,6 +5,7 @@
 #include<QStackedWidget>
 #include "exponeplotter.h"
 #include "anisoplotter.h"
+//#include"anisoplotter2.h"
 class QMenu;
 class QAction;
 
@@ -26,6 +27,7 @@ private:
        /**
         * @brief creates action for menuBar()
         */
+       AnisoPlotter *myanisoplotter;
        GraphPlotter *GraphPlotterFactory(int n,QStackedWidget *CentralWindowWdiget);
        void createAction();
              /**
@@ -49,6 +51,8 @@ private slots:
      * @brief slot activated when user chooses excitation intensity analyis
      */
     void excitationIntensityChoice();
+    void anisotropy();
+    void anisotropy2();
     /**
      * @brief changes display back  to the main screen
      */

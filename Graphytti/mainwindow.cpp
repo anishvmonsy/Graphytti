@@ -1,6 +1,8 @@
 #include "mainwindow.h"
 #include "interactiveplot.h"
 #include "exponeplotter.h"
+#include "anisoplotter.h"
+//#include "anisoplotter2.h"
 #include<QPushButton>
 #include <QVBoxLayout>
 
@@ -21,8 +23,10 @@ MainWindow::MainWindow(QWidget *parent)
     hbox->addWidget(label);
     QVBoxLayout *vbox = new QVBoxLayout(this);
     QPushButton *anisotropy=new QPushButton("Anisotropy",this);
+    QPushButton *anisotropy2=new QPushButton("Anisotropy2",this);
     QPushButton *excitationAnalysis=new QPushButton("Excitation Analysis",this);
     vbox->addWidget(anisotropy);
+    vbox->addWidget(anisotropy2);
     vbox->addWidget(excitationAnalysis);
     hbox->addLayout(vbox);
     widget1->setLayout(hbox);
@@ -33,6 +37,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     //signals and slots connection
     connect(excitationAnalysis, &QPushButton::clicked, this, &MainWindow::excitationIntensityChoice);
+    connect(anisotropy, &QPushButton::clicked, this, &MainWindow::anisotropy);
+    connect(anisotropy2, &QPushButton::clicked, this, &MainWindow::anisotropy2);
 
     createAction();
     createMenu();
@@ -136,6 +142,42 @@ void MainWindow::excitationIntensityChoice(){
        }
 
 }
+void MainWindow::anisotropy(){
+    myanisoplotter= new  AnisoPlotter(stackedWidget);
+    QString file_path= QFileDialog::getOpenFileName(this,
+                                                       tr("Open a file"),
+                                                       QDir().rootPath(),
+                                                       "All files (*)");
+    if(file_path.isEmpty()){
+        QMessageBox::information(this,tr("No file selected"),"Please choose a file to continue");
+        mainScreen();
+    }
+    else{
+
+
+
+
+        int fileCheckingCode= myanisoplotter->checkFile(file_path);
+           if(fileCheckingCode){
+               QMessageBox::information(this,tr("Wrong file selected"),"Please choose a correct file to continue");
+               mainScreen();
+           }
+           else{
+
+           myanisoplotter->parseFile(file_path);
+           myanisoplotter->plotGraph();
+           connect(myanisoplotter->getNextButton(),&QPushButton::clicked,this, &MainWindow::nextCycle);
+           connect(myanisoplotter->getPrevButton(),&QPushButton::clicked,this, &MainWindow::prevCycle);
+
+           connect(myanisoplotter->getGoBackButton(),&QPushButton::clicked,this, &MainWindow::mainScreen);
+         }
+       }
+
+}
+void MainWindow::anisotropy2(){
+
+}
+
 void MainWindow::mainScreen(){
     stackedWidget->setCurrentIndex(0);
     QWidget *topWidget=stackedWidget->widget(1);
