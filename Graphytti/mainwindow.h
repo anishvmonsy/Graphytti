@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include<QStackedWidget>
 #include "exponeplotter.h"
+#include "anisoplotter.h"
 class QMenu;
 class QAction;
 
@@ -25,6 +26,7 @@ private:
        /**
         * @brief creates action for menuBar()
         */
+       GraphPlotter *GraphPlotterFactory(int n,QStackedWidget *CentralWindowWdiget);
        void createAction();
              /**
                * @brief creates menubar
