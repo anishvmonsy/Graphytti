@@ -105,8 +105,9 @@ GraphPlotter *MainWindow::GraphPlotterFactory(int n,QStackedWidget *CentralWindo
 {
     if(n==0)
         return new ExpOnePlotter(CentralWindowWdiget);
-    else if(n==1)
+    else
         return new AnisoPlotter(CentralWindowWdiget);
+
 }
 
 void MainWindow::excitationIntensityChoice(){

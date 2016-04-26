@@ -2,6 +2,7 @@
 #include <QVBoxLayout>
 #include<QPushButton>
 #include<QHBoxLayout>
+#include<QTableWidget>
 #include "interactiveplot.h"
 #define MAX_POINTS 5000
 #define RES_TICK_STEP 2
@@ -10,40 +11,112 @@
 
  ExpOnePlotter::ExpOnePlotter(QStackedWidget *centralWindowWidget)
 {
-    this->centralWindowWidget=centralWindowWidget;
-    expt_title="";
-    QWidget *dummynew=new QWidget;
-    QVBoxLayout *vbox = new QVBoxLayout(dummynew);
-    //QPushButton *anisotropy=new QPushButton("Anisotropy",this);
-    go_back_button=new QPushButton("Go back",dummynew);
-    //vbox->addWidget(anisotropy);
-    QHBoxLayout *hbox1=new QHBoxLayout(dummynew);
-    fluor_graph=new InteractivePlot(dummynew);
-    res_graph=new InteractivePlot(dummynew);
-    acorr_graph=new InteractivePlot(dummynew);
-    expt_title_label= new QLabel(dummynew);
-    prev_button=new QPushButton("Previous Cycle",dummynew);
-    next_button=new QPushButton("Next Cycle",dummynew);
-    expt_cycle_label=new QLabel(dummynew);
-    hbox1->addWidget(fluor_graph);
-    hbox1->addWidget(expt_cycle_label);
-    vbox->addWidget(expt_title_label);
-    vbox->addLayout(hbox1);
-    vbox->addWidget(res_graph);
-    vbox->addWidget(acorr_graph);
+     this->centralWindowWidget=centralWindowWidget;
+        expt_title="";
+        QWidget *dummynew=new QWidget;
+        QVBoxLayout *vbox = new QVBoxLayout(dummynew);
+        QVBoxLayout *graphLayout=new QVBoxLayout(dummynew);
+        QVBoxLayout *sideLayout=new QVBoxLayout(dummynew);
+        //QPushButton *anisotropy=new QPushButton("Anisotropy",this);
+        go_back_button=new QPushButton("Go back",dummynew);
+        //vbox->addWidget(anisotropy);
+        QHBoxLayout *hbox1=new QHBoxLayout(dummynew);
+        fluor_graph=new InteractivePlot(dummynew);
+        res_graph=new InteractivePlot(dummynew);
+        acorr_graph=new InteractivePlot(dummynew);
+        expt_title_label= new QLabel(dummynew);
+        prev_button=new QPushButton("Previous Cycle",dummynew);
+        next_button=new QPushButton("Next Cycle",dummynew);
+        expt_cycle_label=new QLabel(dummynew);
+        tableWidget = new QTableWidget(3,2,dummynew);
+        expt_cycle_label->setWordWrap(true);
+           expt_cycle_label->setAlignment(Qt::AlignHCenter);
+
+           //sideLayout->setSpacing(10);
+
+           sideLayout->addWidget(prev_button,2);
+           sideLayout->addWidget(expt_cycle_label);
+           sideLayout->addWidget(next_button,2);
+           sideLayout->addWidget(tableWidget,2);
+           sideLayout->addStretch(2);
 
 
-    vbox->addWidget(prev_button);
-    vbox->addWidget(next_button);
-    vbox->addWidget(go_back_button);
-    dummynew->setLayout(vbox);
-    centralWindowWidget->addWidget(dummynew);
-    centralWindowWidget->setCurrentIndex(1);
 
-    current_cycle_index=0;
-    file_already_open=false;
+           sideLayout->addWidget(go_back_button,2);
+           graphLayout->addWidget(fluor_graph,2);
+           graphLayout->addWidget(res_graph,1);
+           graphLayout->addWidget(acorr_graph,1);
+
+
+           QFont f( "Arial", 20, QFont::Bold);
+           expt_title_label->setFont( f);
+           vbox->addWidget(expt_title_label,1);
+           expt_title_label->setAlignment(Qt::AlignHCenter);
+
+
+           hbox1->addLayout(graphLayout,5);
+           hbox1->addLayout(sideLayout,1);
+           vbox->addLayout(hbox1,20);
+
+           dummynew->setLayout(vbox);
+
+
+
+           centralWindowWidget->addWidget(dummynew);
+           centralWindowWidget->setCurrentIndex(1);
+
+           current_cycle_index=0;
+           file_already_open=false;
 
 }
+
+ QVector<QString> ExpOnePlotter::getCycleParameters(QString expt_cycle_text){
+      QVector<QString> cycle_parameters;
+      QStringList initial_list=expt_cycle_text.split(QRegExp("[=,\n]"));
+      for (QStringList::iterator it = initial_list.begin();
+               it != initial_list.end(); ++it) {
+              QString current = *it;
+              QRegularExpression re("^[a-zA-Z \.]*$");  // at least one alphabet(detecting a parameter)
+              QString trimmed_current=current.trimmed();
+              QRegularExpressionMatch match=re.match(trimmed_current);
+
+              if (match.hasMatch())
+                 cycle_parameters.append(trimmed_current);
+
+          }
+
+
+
+
+ //     expt_cycle_label->setText(cycle_parameters[0]);
+      return cycle_parameters;
+
+
+  }
+ QVector<QString> ExpOnePlotter::getCycleParameterValues(QString expt_cycle_text){
+     QVector<QString> cycle_parameter_values;
+     QStringList initial_list=expt_cycle_text.split(QRegExp("[=,\n]"));
+     for (QStringList::iterator it = initial_list.begin();
+              it != initial_list.end(); ++it) {
+             QString current = *it;
+             QRegularExpression re("[0-9]");  // at least one alphabet(detecting a parameter)
+             QString trimmed_current=current.trimmed();
+             QRegularExpressionMatch match=re.match(trimmed_current);
+
+               QString cycle_match = QString("Cycle");
+             if (match.hasMatch()&&!trimmed_current.contains(cycle_match))
+                cycle_parameter_values.append(trimmed_current);
+
+         }
+
+
+
+
+
+     return cycle_parameter_values;
+
+ }
+
 
  QPushButton * ExpOnePlotter::getNextButton(){
      return next_button;
@@ -57,10 +130,27 @@
  }
 
  void ExpOnePlotter::plotGraph(){
-        plot_fluor_graph();
-        plot_acorr_graph();
-        plot_res_graph();
-        expt_cycle_label->setText(all_cycles[current_cycle_index].get_cycle_text());
+     plot_fluor_graph();
+         plot_acorr_graph();
+         plot_res_graph();
+        QVector<QString> cycle_parameters=getCycleParameters(all_cycles[current_cycle_index].get_cycle_text());
+ //        QVgetCycleParameters(all_cycles[current_cycle_index].get_cycle_text());
+        QVector<QString> cycle_parameter_values=getCycleParameterValues(all_cycles[current_cycle_index].get_cycle_text());
+
+        QStringList TableHeader;
+        TableHeader<<"Parameter"<<"Value";
+        tableWidget->setHorizontalHeaderLabels(TableHeader);
+
+        int i;
+         for(i=0;i<3;i++){
+             tableWidget->setItem(i, 0, new QTableWidgetItem(cycle_parameters[i]));
+             tableWidget->setItem(i, 1, new QTableWidgetItem(cycle_parameter_values[i]));
+         }
+
+         QFont f( "Arial", 15, QFont::Normal);
+         expt_title_label->setFont( f);
+         QString cycle_title=all_cycles[current_cycle_index].get_cycle_text().split("\n").at(0).trimmed();
+         expt_cycle_label->setText(cycle_title);
 
  }
 
@@ -470,18 +560,11 @@
  void ExpOnePlotter::prevCycle(){
 
      current_cycle_index=(current_cycle_index-1)%all_cycles.size();
+    plotGraph();
 
-     plot_acorr_graph();
-     plot_fluor_graph();
-     plot_res_graph();
-     expt_cycle_label->setText(all_cycles[current_cycle_index].get_cycle_text());
  }
  void ExpOnePlotter::nextCycle(){
      current_cycle_index=(current_cycle_index+1)%all_cycles.size();
-
-     plot_acorr_graph();
-     plot_fluor_graph();
-     plot_res_graph();
-     expt_cycle_label->setText(all_cycles[current_cycle_index].get_cycle_text());
+    plotGraph();
 
  }

@@ -23,10 +23,13 @@ private:
     QPushButton *next_button;
     QLabel *expt_cycle_label;
     QPushButton *go_back_button;
+     QTableWidget *tableWidget;
 
     void plot_fluor_graph();
     void plot_res_graph();
     void plot_acorr_graph();
+    QVector<QString> getCycleParameters(QString);
+    QVector<QString> getCycleParameterValues(QString);
 
 public:
     ExpOnePlotter(QStackedWidget *);
