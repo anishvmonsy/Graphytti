@@ -541,7 +541,14 @@
 
 
  }
- int  AnisoPlotter::checkFile(QString){return 1;}
+ int  AnisoPlotter::checkFile(QString file_path){
+     QString f = QFileInfo(file_path).fileName();
+     QStringList g=f.split('.');
+      if(g.size()==1) return 0;
+      else if(g.size()==2 && g.at(1)=="txt") return 0;
+      else {
+           return 1;}
+ }
  void AnisoPlotter::prevCycle(){
 
      current_cycle_index=(current_cycle_index-1)%all_cycles.size();

@@ -30,4 +30,7 @@ HEADERS  += mainwindow.h \
     anisoplotter.h \
     exptcycle2.h
 
+RESOURCES += \
+    icons.qrc
+
 
