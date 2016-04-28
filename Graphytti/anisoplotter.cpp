@@ -30,6 +30,7 @@
     prev_button=new QPushButton("Previous Cycle",dummynew);
     next_button=new QPushButton("Next Cycle",dummynew);
     expt_cycle_label=new QLabel(dummynew);
+    tableWidget = new QTableWidget(2,2,dummynew);
     expt_cycle_label->setWordWrap(true);
     expt_cycle_label->setAlignment(Qt::AlignHCenter);
 
@@ -37,6 +38,7 @@
     sideLayout->addWidget(prev_button,2);
     sideLayout->addWidget(next_button,2);
     sideLayout->addWidget(expt_cycle_label);
+    sideLayout->addWidget(tableWidget,2);
     sideLayout->addStretch(1);
 
 
@@ -79,10 +81,76 @@
      return go_back_button;
  }
 
+ QVector<QString> AnisoPlotter::getCycleParameters(QString expt_cycle_text){
+      QVector<QString> cycle_parameters;
+      QStringList initial_list=expt_cycle_text.split(QRegExp("[=,\n]"));
+      for (QStringList::iterator it = initial_list.begin();
+               it != initial_list.end(); ++it) {
+              QString current = *it;
+              QRegularExpression re("^[a-zA-Z \.]*$");  // at least one alphabet(detecting a parameter)
+              QString trimmed_current=current.trimmed();
+              QRegularExpressionMatch match=re.match(trimmed_current);
+
+              if (match.hasMatch())
+                 cycle_parameters.append(trimmed_current);
+
+          }
+
+
+
+
+ //     expt_cycle_label->setText(cycle_parameters[0]);
+      return cycle_parameters;
+
+
+  }
+ QVector<QString> AnisoPlotter::getCycleParameterValues(QString expt_cycle_text){
+     QVector<QString> cycle_parameter_values;
+     QStringList initial_list=expt_cycle_text.split(QRegExp("[=,\n]"));
+     for (QStringList::iterator it = initial_list.begin();
+              it != initial_list.end(); ++it) {
+             QString current = *it;
+             QRegularExpression re("[0-9]");  // at least one alphabet(detecting a parameter)
+             QString trimmed_current=current.trimmed();
+             QRegularExpressionMatch match=re.match(trimmed_current);
+
+               QString cycle_match = QString("Cycle");
+             if (match.hasMatch()&&!trimmed_current.contains(cycle_match))
+                cycle_parameter_values.append(trimmed_current);
+
+         }
+
+
+
+
+
+     return cycle_parameter_values;
+
+ }
+
+
  void AnisoPlotter::plotGraph(){
         plot_aniso_graph();
         plot_res1_graph();
         plot_res2_graph();
+        QVector<QString> cycle_parameters=getCycleParameters(all_cycles[current_cycle_index].get_cycle_text());
+ //        QVgetCycleParameters(all_cycles[current_cycle_index].get_cycle_text());
+        QVector<QString> cycle_parameter_values=getCycleParameterValues(all_cycles[current_cycle_index].get_cycle_text());
+
+        QStringList TableHeader;
+        TableHeader<<"Parameter"<<"Value";
+        tableWidget->setHorizontalHeaderLabels(TableHeader);
+
+        int i;
+         for(i=0;i<2;i++){
+             tableWidget->setItem(i, 0, new QTableWidgetItem(cycle_parameters[i]));
+             tableWidget->setItem(i, 1, new QTableWidgetItem(cycle_parameter_values[i]));
+         }
+
+         QFont f( "Arial", 15, QFont::Normal);
+         expt_title_label->setFont( f);
+         QString cycle_title=all_cycles[current_cycle_index].get_cycle_text().split("\n").at(0).trimmed();
+         expt_cycle_label->setText(cycle_title);
 }
  void AnisoPlotter::plot_aniso_graph(){
 
@@ -269,7 +337,7 @@
  void AnisoPlotter::parseFile(QString file_path){
 
      QFile inputFile(file_path);
-     bool counter=false;
+   //  bool counter=false;
 
 
      if (inputFile.open(QIODevice::ReadOnly))
@@ -282,6 +350,11 @@
             }
 
            QString cycle_first_line=in.readLine();
+           cycle_first_line.append("\n");
+           cycle_first_line.append(in.readLine());
+           all_cycles[current_cycle_index].append_cycle_text(cycle_first_line);
+
+
            QVector<double> chan(MAX_POINTS),ex(MAX_POINTS),em_par(MAX_POINTS),em_per(MAX_POINTS),res1(MAX_POINTS),res2(MAX_POINTS),acorr1(MAX_POINTS),acorr2(MAX_POINTS),time(MAX_POINTS),\
         cal_par(MAX_POINTS),cal_per(MAX_POINTS),r_exp(MAX_POINTS),r_cal(MAX_POINTS);
 
@@ -379,7 +452,7 @@
                   if(QString::compare(left_five, "Cycle") == 0 ){
                      next_cycle_start=true;
                      cycle_first_line=simplified_line;
-                     cycle_first_line.append("\n");
+
                   }
 
               }
@@ -398,10 +471,15 @@
 
 
 
+
            while (!in.atEnd()){
              all_cycles.push_back(*(new exptcycle2));
+
              current_cycle_index++;
+             cycle_first_line.append("\n");
+             cycle_first_line.append(in.readLine().trimmed());
              all_cycles[current_cycle_index].append_cycle_text(cycle_first_line);
+
 
 
              bool chan_reached=false;
@@ -422,8 +500,8 @@
                      else{
 
 
-                         simplified_line.append("\n");
-                         all_cycles[current_cycle_index].append_cycle_text(simplified_line);
+                         ;
+
                      }
                  }
              }
@@ -515,7 +593,7 @@
                      if(QString::compare(left_five, "Cycle") == 0 ){
                         next_cycle_start=true;
                         cycle_first_line=simplified_line;
-                        cycle_first_line.append("\n");
+
                      }
                  }
                  else{
@@ -525,6 +603,7 @@
              }
 
              all_cycles[current_cycle_index].load_cycle_data(point_index,chan,time,ex,em_par,em_per,res1,acorr1,cal_par,cal_per,res2,acorr2,r_exp,r_cal);
+//             all_cycles[current_cycle_index].append_cycle_text(cycle_first_line);
 
 
 
@@ -536,28 +615,22 @@
 
            inputFile.close();
      }
+     current_cycle_index=0;
 
 
 
 
  }
- int  AnisoPlotter::checkFile(QString file_path){
-     QString f = QFileInfo(file_path).fileName();
-     QStringList g=f.split('.');
-      if(g.size()==1) return 0;
-      else if(g.size()==2 && g.at(1)=="txt") return 0;
-      else {
-           return 1;}
- }
+ int  AnisoPlotter::checkFile(QString){return 0;}
  void AnisoPlotter::prevCycle(){
 
-     current_cycle_index=(current_cycle_index-1)%all_cycles.size();
+     current_cycle_index=(current_cycle_index+all_cycles.size()-1)%all_cycles.size();
      plotGraph();
-     expt_cycle_label->setText(all_cycles[current_cycle_index].get_cycle_text());
+
  }
  void AnisoPlotter::nextCycle(){
      current_cycle_index=(current_cycle_index+1)%all_cycles.size();
      plotGraph();
-     expt_cycle_label->setText(all_cycles[current_cycle_index].get_cycle_text());
+
 
  }

@@ -4,6 +4,7 @@
 #include "exptcycle.h"
 #include<QLabel>
 #include "interactiveplot.h"
+#include<QTableWidget>
 class ExpOnePlotter : public GraphPlotter{
 
 

@@ -19,6 +19,7 @@ SOURCES += main.cpp\
     interactiveplot.cpp \
     exponeplotter.cpp \
     anisoplotter.cpp \
+    anisoplotter2.cpp \
     exptcycle2.cpp
 
 HEADERS  += mainwindow.h \
@@ -28,6 +29,7 @@ HEADERS  += mainwindow.h \
     graphplotter.h \
     exponeplotter.h \
     anisoplotter.h \
+    anisoplotter2.h \
     exptcycle2.h
 
 RESOURCES += \

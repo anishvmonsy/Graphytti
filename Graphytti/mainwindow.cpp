@@ -2,7 +2,7 @@
 #include "interactiveplot.h"
 #include "exponeplotter.h"
 #include "anisoplotter.h"
-//#include "anisoplotter2.h"
+#include "anisoplotter2.h"
 #include<QPushButton>
 #include <QVBoxLayout>
 
@@ -105,9 +105,10 @@ GraphPlotter *MainWindow::GraphPlotterFactory(int n,QStackedWidget *CentralWindo
 {
     if(n==0)
         return new ExpOnePlotter(CentralWindowWdiget);
-    else
+    else if(n==1)
         return new AnisoPlotter(CentralWindowWdiget);
-
+    else
+        return new AnisoPlotter2(CentralWindowWdiget);
 }
 
 void MainWindow::excitationIntensityChoice(){
@@ -144,7 +145,7 @@ void MainWindow::excitationIntensityChoice(){
 
 }
 void MainWindow::anisotropy(){
-    myanisoplotter= new  AnisoPlotter(stackedWidget);
+    myGraphPlotter= new  AnisoPlotter(stackedWidget);
     QString file_path= QFileDialog::getOpenFileName(this,
                                                        tr("Open a file"),
                                                        QDir().rootPath(),
@@ -158,25 +159,53 @@ void MainWindow::anisotropy(){
 
 
 
-        int fileCheckingCode= myanisoplotter->checkFile(file_path);
+        int fileCheckingCode= myGraphPlotter->checkFile(file_path);
            if(fileCheckingCode){
                QMessageBox::information(this,tr("Wrong file selected"),"Please choose a correct file to continue");
                mainScreen();
            }
            else{
 
-           myanisoplotter->parseFile(file_path);
-           myanisoplotter->plotGraph();
-           connect(myanisoplotter->getNextButton(),&QPushButton::clicked,this, &MainWindow::nextCycle);
-           connect(myanisoplotter->getPrevButton(),&QPushButton::clicked,this, &MainWindow::prevCycle);
+           myGraphPlotter->parseFile(file_path);
+           myGraphPlotter->plotGraph();
+           connect(myGraphPlotter->getNextButton(),&QPushButton::clicked,this, &MainWindow::nextCycle);
+           connect(myGraphPlotter->getPrevButton(),&QPushButton::clicked,this, &MainWindow::prevCycle);
 
-           connect(myanisoplotter->getGoBackButton(),&QPushButton::clicked,this, &MainWindow::mainScreen);
+           connect(myGraphPlotter->getGoBackButton(),&QPushButton::clicked,this, &MainWindow::mainScreen);
          }
        }
 
 }
 void MainWindow::anisotropy2(){
+    myGraphPlotter= new  AnisoPlotter2(stackedWidget);
+    QString file_path= QFileDialog::getOpenFileName(this,
+                                                       tr("Open a file"),
+                                                       QDir().rootPath(),
+                                                       "All files (*)");
+    if(file_path.isEmpty()){
+        QMessageBox::information(this,tr("No file selected"),"Please choose a file to continue");
+        mainScreen();
+    }
+    else{
 
+
+
+
+        int fileCheckingCode= myGraphPlotter->checkFile(file_path);
+           if(fileCheckingCode){
+               QMessageBox::information(this,tr("Wrong file selected"),"Please choose a correct file to continue");
+               mainScreen();
+           }
+           else{
+
+           myGraphPlotter->parseFile(file_path);
+           myGraphPlotter->plotGraph();
+           connect(myGraphPlotter->getNextButton(),&QPushButton::clicked,this, &MainWindow::nextCycle);
+           connect(myGraphPlotter->getPrevButton(),&QPushButton::clicked,this, &MainWindow::prevCycle);
+
+           connect(myGraphPlotter->getGoBackButton(),&QPushButton::clicked,this, &MainWindow::mainScreen);
+         }
+       }
 }
 
 void MainWindow::mainScreen(){
@@ -189,8 +218,8 @@ void MainWindow::nextCycle(){
 
         myGraphPlotter->nextCycle();
 
-
 }
 void MainWindow::prevCycle(){
     myGraphPlotter->prevCycle();
+
 }

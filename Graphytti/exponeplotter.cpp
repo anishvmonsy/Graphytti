@@ -559,7 +559,7 @@
  }
  void ExpOnePlotter::prevCycle(){
 
-     current_cycle_index=(current_cycle_index-1)%all_cycles.size();
+    current_cycle_index=(current_cycle_index+all_cycles.size()-1)%all_cycles.size();
     plotGraph();
 
  }

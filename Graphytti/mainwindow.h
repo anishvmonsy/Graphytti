@@ -5,7 +5,7 @@
 #include<QStackedWidget>
 #include "exponeplotter.h"
 #include "anisoplotter.h"
-//#include"anisoplotter2.h"
+#include"anisoplotter2.h"
 class QMenu;
 class QAction;
 
@@ -23,11 +23,12 @@ private:
      /**
         * @brief responsible for plotting  graphs and displaying other details of particular file format
         */
-       ExpOnePlotter *myGraphPlotter;
+       GraphPlotter *myGraphPlotter;
        /**
         * @brief creates action for menuBar()
         */
-       AnisoPlotter *myanisoplotter;
+
+
        GraphPlotter *GraphPlotterFactory(int n,QStackedWidget *CentralWindowWdiget);
        void createAction();
              /**
